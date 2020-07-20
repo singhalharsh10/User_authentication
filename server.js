@@ -25,6 +25,11 @@ app.get('/login', (req, res) => {
     res.render('login')
 })
 
+app.get('/logout', (req, res) => {
+    req.session.userId = null
+    res.redirect('login')
+})
+
 
 app.get('/profile', async(req, res) => {
     // idhar vo user ki details bhejni h jise login kiya h ->cookie kaam kregi ye (uper session wali line ki mada se)
