@@ -21,6 +21,35 @@ app.get('/signup', (req, res) => {
     res.render('signup')
 })
 
+app.get('/login', (req, res) => {
+    res.render('login')
+})
+
+
+app.get('/profile', async(req, res) => {
+    // idhar vo user ki details bhejni h jise login kiya h ->cookie kaam kregi ye (uper session wali line ki mada se)
+    if (!req.session.userId) {
+        return res.redirect('/login')
+    }
+    const user = await Users.findByPk(req.session.userId)
+    res.render('profile', { user })
+})
+
+app.post('/login', async(req, res) => {
+    const user = await Users.findOne({ where: { username: req.body.username } })
+    if (!user) {
+        return res.status(404).render('login', { error: 'No such username found' })
+    } else {
+        if (user.password == req.body.password) {
+            req.session.userId = user.id //ye imp h line isse hi hmara profile page m render hoga data login user ki detail
+            res.redirect('/profile')
+        } else {
+            return res.status(401).render('login', { error: 'Wrong Password' })
+
+        }
+    }
+})
+
 app.post('/signup', async(req, res) => {
     const user = await Users.create({
         username: req.body.username,
